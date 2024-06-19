@@ -14,11 +14,20 @@ app.secret_key = os.getenv("SECRET_KEY")
 questions = [
     "Please provide your general information like name, city, state, country.",
     "Please provide your academic performance (grade, board, present percentage).",
-    "What are your goals, financial position, and which places are you interested in for studies?"
+    "What are your goals, financial position, and which places are you interested in for studies?",
+    "Please provide your net worth?"
+]
+
+# Options for the net worth question
+net_worth_options = [
+    "a) below 25 lakh",
+    "b) 25-75 lakh",
+    "c) 75 lakh - 1CR",
+    "d) 1CR+"
 ]
 
 # Options to present after initial questions
-options = [
+final_options = [
     "Would you like a detailed roadmap to achieve your career goals considering your academics, financial status, and study locations?",
     "Do you want personalized career guidance based on your academic performance, financial status, and desired study locations?",
     "Do you need other specific guidance like scholarship opportunities, study programs, or financial planning?",
@@ -38,16 +47,24 @@ def process_chat():
     
     if user_input:
         question_index = session.get('question_index', 0)
+        user_responses = session.get('user_responses', [])
+        user_responses.append(user_input)
+        session['user_responses'] = user_responses
         
         if question_index < len(questions):
-            session['user_responses'].append(user_input)
             question_index += 1
             session['question_index'] = question_index
             
             if question_index < len(questions):
-                return jsonify(questions[question_index])
+                if question_index == len(questions) - 1:
+                    return jsonify({
+                        'question': questions[question_index], 
+                        'options': net_worth_options
+                    })
+                else:
+                    return jsonify({'question': questions[question_index]})
             else:
-                return jsonify({'options': options})
+                return jsonify({'options': final_options})
         
         else:
             try:

@@ -12,6 +12,8 @@ document.getElementById('user-input').addEventListener('keypress', function(even
 
 function sendUserInput() {
     var userInput = document.getElementById('user-input').value;
+    if (!userInput.trim()) return;
+
     fetch('/process_chat', {
         method: 'POST',
         headers: {
@@ -21,17 +23,19 @@ function sendUserInput() {
     })
     .then(response => response.json())
     .then(data => {
-        if (typeof data === 'string') {
-            appendChat("user", userInput);
-            appendChat("robot", data);
-        } else if (data.options) {
-            appendChat("user", userInput);
-            displayOptions(data.options);
-        } else if (data.response) {
-            appendChat("user", userInput);
-            appendChat("robot", data.response);
-        } else if (data.error) {
+        if (data.error) {
             appendChat("robot", "Error: " + data.error);
+        } else {
+            appendChat("user", userInput); // Append user input only once here
+            if (data.response) {
+                appendChat("robot", data.response);
+            }
+            if (data.question) {
+                appendChat("robot", data.question);
+            }
+            if (data.options) {
+                displayOptions(data.options);
+            }
         }
     })
     .catch(error => console.error('Error:', error));
@@ -75,7 +79,11 @@ function sendOption(option) {
     .then(data => {
         if (data.response) {
             appendChat("robot", data.response);
-        } else if (data.error) {
+        }
+        if (data.options) {
+            displayOptions(data.options);
+        }
+        if (data.error) {
             appendChat("robot", "Error: " + data.error);
         }
     })
