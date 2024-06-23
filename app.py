@@ -12,18 +12,10 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 # Initial questions
 questions = [
-    "Please provide your general information like name, city, state, country.",
-    "Please provide your academic performance (grade, board, present percentage).",
-    "What are your goals, financial position, and which places are you interested in for studies?",
-    "Please provide your net worth?"
-]
-
-# Options for the net worth question
-net_worth_options = [
-    "a) below 25 lakh",
-    "b) 25-75 lakh",
-    "c) 75 lakh - 1CR",
-    "d) 1CR+"
+    "Please introduce yourself with basic background information such as where you are based, language, education.",
+    "To gain further understanding, can you please describe your educational experience?",
+    "What are your aspirations and higher education goals (e.g., want to study abroad or at elite universities)?",
+    "Please describe if there are any financial constraints?"
 ]
 
 # Options to present after initial questions
@@ -56,13 +48,7 @@ def process_chat():
             session['question_index'] = question_index
             
             if question_index < len(questions):
-                if question_index == len(questions) - 1:
-                    return jsonify({
-                        'question': questions[question_index], 
-                        'options': net_worth_options
-                    })
-                else:
-                    return jsonify({'question': questions[question_index]})
+                return jsonify({'question': questions[question_index]})
             else:
                 return jsonify({'options': final_options})
         
